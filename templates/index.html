@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 35px;
+            width: 380px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 22px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 14px;
+            border: 1px solid #aaa;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            background: #007bff;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background: #005fcc;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            display: none;
+            background: #e7f7e9;
+            border-left: 5px solid #2b8a3e;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>House Price Prediction</h2>
+
+        <!-- ✅ FORM ADDED -->
+        <form id="predictionForm">
+
+            <label>Location</label>
+            <select id="location" required>
+                <option value="" disabled selected>Select a location</option>
+                <option value="Whitefield">Whitefield</option>
+                <option value="Sarjapur  Road">Sarjapur Road</option>
+                <option value="Electronic City">Electronic City</option>
+                <option value="Rajaji Nagar">Rajaji Nagar</option>
+                <option value="Indira Nagar">Indira Nagar</option>
+                <option value="Marathahalli">Marathahalli</option>
+                <option value="HSR Layout">HSR Layout</option>
+                <option value="Hebbal">Hebbal</option>
+                <option value="Banashankari">Banashankari</option>
+                <option value="KR Puram">KR Puram</option>
+                <option value="Yelahanka">Yelahanka</option>
+                <option value="Bellandur">Bellandur</option>
+                <option value="Jayanagar">Jayanagar</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label>Total Sqft</label>
+            <input type="number" id="total_sqft" placeholder="Example: 1200" required min="1">
+
+            <label>Bathrooms</label>
+            <input type="number" id="bath" placeholder="Example: 2" required min="1">
+
+            <label>BHK</label>
+            <input type="number" id="Bhk" placeholder="Example: 2" required min="1">
+
+            <button type="submit">Predict Price</button>
+        </form>
+
+        <div id="output" class="result"></div>
+
+    </div>
+
+    <script>
+        const form = document.getElementById("predictionForm");
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault(); // prevent page reload
+
+            if (!form.checkValidity()) {
+                form.reportValidity(); // ✅ shows native popup
+                return;
+            }
+
+            const location = document.getElementById("location").value;
+            const sqft = document.getElementById("total_sqft").value;
+            const bath = document.getElementById("bath").value;
+            const bhk = document.getElementById("Bhk").value;
+
+            const bodyData = {
+                location,
+                total_sqft: Number(sqft),
+                bath: Number(bath),
+                Bhk: Number(bhk)
+            };
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(bodyData)
+            });
+
+            const result = await response.json();
+            const outputDiv = document.getElementById("output");
+
+            if (result.estimated_price_lakhs) {
+                outputDiv.innerHTML = `<strong>Estimated Price:</strong> ₹ ${result.estimated_price_lakhs} Lakhs`;
+                outputDiv.style.display = "block";
+            }
+        });
+    </script>
+
+</body>
+</html>
+``
